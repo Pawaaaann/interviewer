@@ -8,6 +8,14 @@ export async function POST(request: Request) {
   const { type, role, level, techstack, amount, userid } = await request.json();
 
   try {
+    // Check if database is available
+    if (!db) {
+      return Response.json({ 
+        success: false, 
+        error: "Database not configured. Please set up Firebase configuration." 
+      }, { status: 500 });
+    }
+
     const { text: questions } = await generateText({
       model: google("gemini-2.0-flash-001"),
       prompt: `Prepare questions for a job interview.

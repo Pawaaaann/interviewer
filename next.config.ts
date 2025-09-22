@@ -34,9 +34,9 @@ const nextConfig: NextConfig = {
     ];
   },
   // Enable experimental features for better host handling
-  experimental: {
-    allowedRevalidateHeaderKeys: ["*"],
-  },
+  // experimental: {
+  //   allowedRevalidateHeaderKeys: ["*"],
+  // },
   // Development server configuration for Replit
   ...(process.env.NODE_ENV === "development" && {
     async headers() {
