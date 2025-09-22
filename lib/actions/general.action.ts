@@ -51,6 +51,11 @@ export async function createFeedback(params: CreateFeedbackParams) {
 
     let feedbackRef;
 
+    if (!db) {
+      console.error("Database not configured");
+      return { success: false };
+    }
+
     if (feedbackId) {
       feedbackRef = db.collection("feedback").doc(feedbackId);
     } else {
@@ -67,6 +72,11 @@ export async function createFeedback(params: CreateFeedbackParams) {
 }
 
 export async function getInterviewById(id: string): Promise<Interview | null> {
+  if (!db) {
+    console.error("Database not configured");
+    return null;
+  }
+
   const interview = await db.collection("interviews").doc(id).get();
 
   return interview.data() as Interview | null;
@@ -76,6 +86,11 @@ export async function getFeedbackByInterviewId(
   params: GetFeedbackByInterviewIdParams
 ): Promise<Feedback | null> {
   const { interviewId, userId } = params;
+
+  if (!db) {
+    console.error("Database not configured");
+    return null;
+  }
 
   const querySnapshot = await db
     .collection("feedback")
@@ -95,6 +110,11 @@ export async function getLatestInterviews(
 ): Promise<Interview[] | null> {
   const { userId, limit = 20 } = params;
 
+  if (!db) {
+    console.error("Database not configured");
+    return null;
+  }
+
   const interviews = await db
     .collection("interviews")
     .orderBy("createdAt", "desc")
@@ -112,6 +132,11 @@ export async function getLatestInterviews(
 export async function getInterviewsByUserId(
   userId: string
 ): Promise<Interview[] | null> {
+  if (!db) {
+    console.error("Database not configured");
+    return null;
+  }
+
   const interviews = await db
     .collection("interviews")
     .where("userId", "==", userId)
