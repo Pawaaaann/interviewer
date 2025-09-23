@@ -137,14 +137,48 @@ export async function getInterviewsByUserId(
     return null;
   }
 
-  const interviews = await db
-    .collection("interviews")
-    .where("userId", "==", userId)
-    .orderBy("createdAt", "desc")
-    .get();
+  try {
+    // Try the optimal query first (requires composite index)
+    const interviews = await db
+      .collection("interviews")
+      .where("userId", "==", userId)
+      .orderBy("createdAt", "desc")
+      .get();
 
-  return interviews.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Interview[];
+    return interviews.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Interview[];
+
+  } catch (error: any) {
+    // If index is missing, fall back to simpler query and sort client-side
+    if (error.code === 9 || error.message?.includes('index')) {
+      console.warn("Firestore index missing, using fallback query");
+      try {
+        const interviews = await db
+          .collection("interviews")
+          .where("userId", "==", userId)
+          .get();
+
+        const interviewData = interviews.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Interview[];
+
+        // Sort client-side by createdAt desc
+        return interviewData.sort((a, b) => {
+          const dateA = new Date(a.createdAt || 0).getTime();
+          const dateB = new Date(b.createdAt || 0).getTime();
+          return dateB - dateA; // desc order
+        });
+
+      } catch (fallbackError) {
+        console.error("Error in fallback query:", fallbackError);
+        return []; // Return empty array instead of null to prevent crashes
+      }
+    }
+    
+    console.error("Error fetching interviews:", error);
+    return []; // Return empty array instead of null
+  }
 }
