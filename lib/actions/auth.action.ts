@@ -122,27 +122,43 @@ export async function getCurrentUser(): Promise<User | null> {
   if (!sessionCookie) return null;
 
   try {
-    if (!auth || !db) {
-      console.log("Auth or DB not configured");
+    if (!auth) {
+      console.log("Auth not configured");
       return null;
     }
 
     const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
 
-    // get user info from db
-    const userRecord = await db
-      .collection("users")
-      .doc(decodedClaims.uid)
-      .get();
-    if (!userRecord.exists) return null;
+    // Try to get user info from Firestore database
+    if (db) {
+      try {
+        const userRecord = await db
+          .collection("users")
+          .doc(decodedClaims.uid)
+          .get();
+        
+        if (userRecord.exists) {
+          return {
+            ...userRecord.data(),
+            id: userRecord.id,
+          } as User;
+        }
+      } catch (dbError: any) {
+        console.warn("Firestore not available:", dbError.message);
+        // Continue to fallback below
+      }
+    }
 
+    // Fallback: Return basic user info from session token when Firestore is unavailable
+    console.log("Using fallback authentication (Firestore unavailable)");
     return {
-      ...userRecord.data(),
-      id: userRecord.id,
+      id: decodedClaims.uid,
+      name: decodedClaims.name || decodedClaims.email?.split('@')[0] || "User",
+      email: decodedClaims.email || "",
     } as User;
-  } catch (error) {
-    console.log(error);
 
+  } catch (error: any) {
+    console.log("Session verification failed:", error.message);
     // Invalid or expired session
     return null;
   }
