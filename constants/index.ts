@@ -97,6 +97,82 @@ export const mappings = {
   "aws amplify": "amplify",
 };
 
+// Interview domains with their configurations
+export const interviewDomains = [
+  {
+    id: "frontend",
+    name: "Frontend Development",
+    description: "React, Vue, Angular, HTML, CSS, JavaScript",
+    icon: "💻",
+    techStack: ["React", "JavaScript", "HTML", "CSS", "TypeScript"],
+    commonRoles: ["Frontend Developer", "React Developer", "UI Developer"],
+    color: "bg-blue-500"
+  },
+  {
+    id: "backend",
+    name: "Backend Development", 
+    description: "Node.js, Python, Java, APIs, Databases",
+    icon: "🔧",
+    techStack: ["Node.js", "Express", "MongoDB", "PostgreSQL", "Python"],
+    commonRoles: ["Backend Developer", "API Developer", "Server Engineer"],
+    color: "bg-green-500"
+  },
+  {
+    id: "fullstack",
+    name: "Full Stack Development",
+    description: "End-to-end web development",
+    icon: "⚡",
+    techStack: ["React", "Node.js", "MongoDB", "Express", "JavaScript"],
+    commonRoles: ["Full Stack Developer", "Software Engineer"],
+    color: "bg-purple-500"
+  },
+  {
+    id: "mobile",
+    name: "Mobile Development",
+    description: "React Native, Flutter, iOS, Android",
+    icon: "📱",
+    techStack: ["React Native", "Flutter", "Swift", "Kotlin", "Dart"],
+    commonRoles: ["Mobile Developer", "iOS Developer", "Android Developer"],
+    color: "bg-pink-500"
+  },
+  {
+    id: "devops",
+    name: "DevOps & Cloud",
+    description: "AWS, Docker, Kubernetes, CI/CD",
+    icon: "☁️",
+    techStack: ["AWS", "Docker", "Kubernetes", "Jenkins", "Terraform"],
+    commonRoles: ["DevOps Engineer", "Cloud Engineer", "Site Reliability Engineer"],
+    color: "bg-orange-500"
+  },
+  {
+    id: "data",
+    name: "Data Science & ML",
+    description: "Python, Machine Learning, Analytics",
+    icon: "📊",
+    techStack: ["Python", "TensorFlow", "Pandas", "SQL", "Jupyter"],
+    commonRoles: ["Data Scientist", "ML Engineer", "Data Analyst"],
+    color: "bg-indigo-500"
+  },
+  {
+    id: "product",
+    name: "Product Management",
+    description: "Strategy, Requirements, User Experience",
+    icon: "🎯",
+    techStack: ["Analytics", "Figma", "Jira", "Product Strategy"],
+    commonRoles: ["Product Manager", "Product Owner", "Business Analyst"],
+    color: "bg-red-500"
+  },
+  {
+    id: "design",
+    name: "UI/UX Design",
+    description: "User Experience, Interface Design",
+    icon: "🎨",
+    techStack: ["Figma", "Adobe XD", "Sketch", "Photoshop", "Principle"],
+    commonRoles: ["UX Designer", "UI Designer", "Product Designer"],
+    color: "bg-teal-500"
+  }
+];
+
 export const interviewer: CreateAssistantDTO = {
   name: "Interviewer",
   firstMessage:

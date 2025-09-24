@@ -22,6 +22,7 @@ interface Interview {
   createdAt: string;
   userId: string;
   type: string;
+  domain?: string;
   finalized: boolean;
 }
 
