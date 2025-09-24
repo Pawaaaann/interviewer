@@ -115,18 +115,59 @@ export async function getLatestInterviews(
     return null;
   }
 
-  const interviews = await db
-    .collection("interviews")
-    .orderBy("createdAt", "desc")
-    .where("finalized", "==", true)
-    .where("userId", "!=", userId)
-    .limit(limit)
-    .get();
+  try {
+    // Try the optimal query first (requires composite index)
+    const interviews = await db
+      .collection("interviews")
+      .orderBy("createdAt", "desc")
+      .where("finalized", "==", true)
+      .where("userId", "!=", userId)
+      .limit(limit)
+      .get();
 
-  return interviews.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Interview[];
+    return interviews.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Interview[];
+
+  } catch (error: any) {
+    // If index is missing, fall back to simpler query and filter client-side
+    if (error.code === 9 || error.message?.includes('index')) {
+      console.warn("Firestore index missing for getLatestInterviews, using fallback");
+      try {
+        // Simpler query: just get finalized interviews and filter/sort client-side
+        const interviews = await db
+          .collection("interviews")
+          .where("finalized", "==", true)
+          .limit(limit * 3) // Get more to account for filtering out current user
+          .get();
+
+        const interviewData = interviews.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Interview[];
+
+        // Filter out current user's interviews and sort by createdAt desc
+        const filteredInterviews = interviewData
+          .filter((interview) => interview.userId !== userId)
+          .sort((a, b) => {
+            const dateA = new Date(a.createdAt || 0).getTime();
+            const dateB = new Date(b.createdAt || 0).getTime();
+            return dateB - dateA; // desc order
+          })
+          .slice(0, limit); // Apply limit after sorting
+
+        return filteredInterviews;
+
+      } catch (fallbackError) {
+        console.error("Error in fallback query for getLatestInterviews:", fallbackError);
+        return []; // Return empty array instead of null to prevent crashes
+      }
+    }
+    
+    console.error("Error fetching latest interviews:", error);
+    return []; // Return empty array instead of null
+  }
 }
 
 export async function getInterviewsByUserId(
