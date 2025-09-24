@@ -119,6 +119,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 label="Name"
                 placeholder="Your Name"
                 type="text"
+                autoComplete="name"
               />
             )}
 
@@ -128,6 +129,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
               label="Email"
               placeholder="Your email address"
               type="email"
+              autoComplete={isSignIn ? "username" : "email"}
             />
 
             <FormField
@@ -136,6 +138,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
               label="Password"
               placeholder="Enter your password"
               type="password"
+              autoComplete={isSignIn ? "current-password" : "new-password"}
             />
 
             <Button className="btn" type="submit">
