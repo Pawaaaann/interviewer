@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: prepwise-interview-app
+    name: your-interviewer-app
     env: node
     plan: starter
     buildCommand: npm install && npm run build
@@ -11,6 +11,6 @@ services:
       - key: NEXT_PUBLIC_BASE_URL
         fromService:
           type: web
-          name: prepwise-interview-app
+          name: your-interviewer-app
           property: host
     healthCheckPath: /
